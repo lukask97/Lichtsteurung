@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:WpfApp6"
         mc:Ignorable="d"
         Title="Lichtsteuerung" Height="450" Width="800">
-    <TabControl>
+    <TabControl Name="tabControl1" Margin="1,0,-1.4,0" >
         <TabItem Header="Main" Width="350">
 
             <StackPanel Orientation="Horizontal" >
-                
+                <Button x:Name="button1" Click="Button1_Click">aaa</Button>
                 
                 <StackPanel>
                     <Grid>
