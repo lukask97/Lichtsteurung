@@ -15,49 +15,45 @@ using System.Windows.Shapes;
 using System.Threading;
 using System.IO.Ports;
 using System.IO;
+using System.ComponentModel;
+using Microsoft.Win32;
+using forms = System.Windows.Forms; 
 
 
 
-namespace WpfApp6
+
+namespace Lichtsteuerung
 {
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Lichtsteuerung : Window
     {
 
         
+        
+
 
         private System.Windows.Forms.ColorDialog colorDialog1;
 
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenu contextMenu;
 
-        //private System.Windows.Forms.MenuItem menuItem0 = new System.Windows.Forms.MenuItem {Index = 0, Text = "Exit" };
-        //private System.Windows.Forms.MenuItem menuItem1 = new System.Windows.Forms.MenuItem {Index = 1, Text = "Main" };
-        //private System.Windows.Forms.MenuItem menuItem2 = new System.Windows.Forms.MenuItem {Index = 2, Text = "Settings" };
-        //private System.Windows.Forms.MenuItem menuItem3 = new System.Windows.Forms.MenuItem {Index = 3, Text = "Off" };
-        //private System.Windows.Forms.MenuItem menuItem4 = new System.Windows.Forms.MenuItem {Index = 0, Text = "White" };
-        //private System.Windows.Forms.MenuItem menuItem5 = new System.Windows.Forms.MenuItem {Index = 0, Text = "Red" };
-        //private System.Windows.Forms.MenuItem menuItem6 = new System.Windows.Forms.MenuItem {Index = 0, Text = "Green" };
-        //private System.Windows.Forms.MenuItem menuItem7 = new System.Windows.Forms.MenuItem {Index = 0, Text = "Blue" };
-        //private System.Windows.Forms.MenuItem menuItem8 = new System.Windows.Forms.MenuItem { Index = 0, Text = "Custom1" };
-        //private System.Windows.Forms.MenuItem menuItem9 = new System.Windows.Forms.MenuItem { Index = 0, Text = "Custom2" };
-        //private System.Windows.Forms.MenuItem menuItem10 = new System.Windows.Forms.MenuItem { Index = 0, Text = "Custom3" };
 
 
 
         private SerialPort sP;
         List<System.Windows.Forms.MenuItem> menuItems = new List<System.Windows.Forms.MenuItem>();
 
+        
 
 
 
 
         private System.ComponentModel.IContainer components;
 
-        public MainWindow()
-        {        
+        public Lichtsteuerung()
+        {
             InitializeComponent();
 
 
@@ -79,7 +75,7 @@ namespace WpfApp6
                 sP = new SerialPort { PortName = "COM5", BaudRate = 9600, ReadTimeout = 500, WriteTimeout = 500 };
                 sP.Open();
             }
-            catch (Exception e) { MessageBox.Show(e.Message);}
+            catch (Exception e) { MessageBox.Show(e.Message); }
 
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
 
@@ -97,43 +93,45 @@ namespace WpfApp6
             notifyIcon.Visible = true;
 
             int presetCount = 0;
-            
-            
+
+
 
 
             //Add menuItems 
             {
-                
+
                 menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Exit" });//0
                 menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Main" });//1
-                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Settings" });//2
-                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "OFF" });//3
-                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "White" });//4
-                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Red" });//5
-                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Green" });//6
-                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Blue" });//7
-                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "RGB" });//7
+                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "OFF" });//2
+                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "White" });//3
+                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Red" });//4
+                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Green" });//5
+                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Blue" });//6
+                menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "Rainbow" });//7
 
-                for (int i = 0; i < presetCount;i++)
+                for (int i = 0; i < presetCount; i++)
                 {
                     menuItems.Add(new System.Windows.Forms.MenuItem { Index = 0, Text = "" });
                 }
 
+
+
+
             }
 
 
-            
+
 
             // Initialize contextMenu1
 
-            for (int i = menuItems.Count()-1; i >= 0; i--)
+            for (int i = menuItems.Count() - 1; i >= 0; i--)
             {
                 contextMenu.MenuItems.Add(menuItems[i]);
             }
-            
-            
+
+
             notifyIcon.ContextMenu = contextMenu;
-    
+
 
             notifyIcon.DoubleClick += new System.EventHandler(this.GotoMain);
 
@@ -141,19 +139,67 @@ namespace WpfApp6
             menuItems[0].Click += new EventHandler(Exit);       //Exit
             menuItems[1].Click += new EventHandler(GotoMain);   //Main
             menuItems[2].Click += new EventHandler(GotoSettings);   //Settings
-            menuItems[3].Click += (Sender, e) => SetColor(3,"off");   //OFF
-            menuItems[4].Click += (Sender, e) => SetColor(4, "white"); //WHITE
-            menuItems[5].Click += (Sender, e) => SetColor(5, "red");   //RED
-            menuItems[6].Click += (Sender, e) => SetColor(6, "green"); //GREEN
-            menuItems[7].Click += (Sender, e) => SetColor(7, "blue");  // BLUE
-            //menuItems[7].Click += (sender, e) => colorDialog1;
+            menuItems[3].Click += (Sender, e) => SetColor(0,0,0,0);   //OFF
+            menuItems[4].Click += (Sender, e) => SetColor(0,0,0,255); //WHITE
+            menuItems[5].Click += (Sender, e) => SetColor(255,0,0,0);   //RED
+            menuItems[6].Click += (Sender, e) => SetColor(0,255,0,0); //GREEN
+            menuItems[7].Click += (Sender, e) => SetColor(0,0,255,0);  // BLUE
+                                                                       //menuItems[7].Click += (sender, e) => colorDialog1;
 
-            
+            //List<forms.MenuItem> mt = new List<forms.MenuItem>();
+            //mt.Add(new forms.MenuItems);
+            //mt[1].Container = Brushes.Aqua;
+            //mt[0].Click += (sender, e) => { Exit(sender,e);};
+
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    forms.Button btn = new forms.Button();
+            //    btn.Text = i.ToString();
+
+            //    forms.ContextMenu ct = new forms.ContextMenu();
+            //    for (int j = 0; j < menuItems.Count(); j++)
+            //    {
+            //        ct.MenuItems.Add(menuItems[j]);
+            //    }
+            //    button1.ContextMenu = ct;
+            //    ButtonPanel.Children.Add(btn);
+            //}
+
+
+
+            int rows = 5, columns = 5;
+
+            for (int i = 0; i < columns; i++) mainBtnGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            for (int i = 0; i < rows; i++)mainBtnGrid.RowDefinitions.Add(new RowDefinition());
+
+            List<Button> buttonList = new List<Button>();
+
+
+
+            for(int i = 0;i<buttonList.Count();i++)
+            {
+                Button btn = new Button();
+                // btn.Content =
+                // btn.Background
+                
+            }
+
+
+
 
         }
+
         
 
-            private void GotoMain (object Sender, EventArgs e)
+
+
+
+
+
+        
+
+
+        private void GotoMain(object Sender, EventArgs e)
         {
             tabControl1.SelectedIndex = 0;
             if (this.WindowState == WindowState.Minimized)
@@ -167,7 +213,7 @@ namespace WpfApp6
                 this.WindowState = WindowState.Normal;
             this.Activate();
         }
-        
+
 
         private void Exit(object Sender, EventArgs e)
         {
@@ -180,69 +226,76 @@ namespace WpfApp6
             if (this.WindowState == WindowState.Minimized)
                 this.ShowInTaskbar = false;
             else this.ShowInTaskbar = true;
-         
+
         }
 
-        private void SetColor(int menuobjectNR,string color) //Setcolor("")
+        private void SetColor(int r, int g, int b, int w) //Setcolor("")
         {
             try
-            {
-                if (color == "white")
-                {
-                    
-                    sP.WriteLine("setwhite");
-                    
-                }
-                if (color == "green")
-                {
-                    sP.WriteLine("set_all_255,000,000");
-                }
-                if (color == "red")
-                {
-                    sP.WriteLine("set_all_000,255,000");
-                }
-                if (color == "blue")
-                {
-                    sP.WriteLine("set_all_000,000,255");
-                }
-                if (color == "blue")
-                {
-                    sP.WriteLine("set_all_000,000,255");
-                }
+            {       
+                    sP.WriteLine("set_all_" + r.ToString() + "," + g.ToString() + "," + b.ToString() + "," + w.ToString());            
             }
             catch (Exception e) { MessageBox.Show(e.Message); }
         }
 
 
-        //private void uncheckMenuItems()
-        //{
-        //    foreach(MenuItem menuItem in MenuItems)
-        //}
 
-        private void SetColor(int R,int G, int B) //Setcolor("")
+
+        
+
+        private void SetBrightness(int a) //SetBrigthness("")
         {
             try
             {
-                sP.WriteLine("set_all_"+R.ToString()+"," + G.ToString() + "," + B.ToString());
+                sP.WriteLine("set_brightness_" + a.ToString());
+            }
+            catch (Exception e) { MessageBox.Show(e.Message); }
+        }
+
+        private void SetMode(int mode) //SetBrigthness("")
+        {
+            mode = 0;
+            try
+            {
+                sP.WriteLine("set_mode_" + mode.ToString());
             }
             catch (Exception e) { MessageBox.Show(e.Message); }
         }
 
 
+
+        
 
 
 
         private void Button1_Click(object sender, System.EventArgs e)
         {
-            
-           // if (colorDialog1.ShowDialog() == DialogResult.OK)
+
+            //if (colorDialog1.ShowDialog() == DialogResult)
             {
                 colorDialog1.ShowDialog();
-                //button1.Background = colorDialog1.Color;
-                colorDialog1.Color.R;
+                Button btn = sender as Button;
+                btn.Background = new SolidColorBrush(Color.FromArgb(255, (byte)colorDialog1.Color.R, (byte)colorDialog1.Color.G, (byte)colorDialog1.Color.B));
+
             }
         }
 
-        
-    }
+
+
+        public class preset
+        {
+            string name;
+            static int length, speed, ticks, ledAmount;  // ADD More........
+
+
+            int[,,] rgbval = new int[ticks,ledAmount,4]; // [tick][LED_Number][R,G,B,Brightness]
+
+
+
+
+        }
+
+}
+
+    
 }
